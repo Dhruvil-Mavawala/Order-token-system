@@ -1,50 +1,75 @@
-﻿# Order-token-system
+🍽️ Order Token System
+  A zero‑cost, real‑time food ordering and token management system built using HTML, CSS, JavaScript, and Firebase.
+  The system works as a lightweight ERP‑style solution for small food businesses and is fully deployed online.
 
-🍽️ Digital Order Token System
-A simple web‑based food ordering and token management system built using HTML, CSS, JavaScript, and Firebase.
-Customers can place orders from a digital menu, receive a token, and the admin can manage orders in real time.
+**🌐 Live Demo**
+  User Ordering Page:
+  https://order-token-system.web.app/
 
-🚀 Features
-Digital menu with item images
+**Admin Panel:**
+  https://order-token-system.web.app/admin.html
 
-Add items to cart
+Admin Credentials
 
-Customer name entry before order
+  Username: Rachit
+  Password: 2904
 
-Automatic token generation
+🚀 **Features**
 
-Real‑time order updates using Firebase
+  👤 **User Side**
+  
+    Digital food menu
+    
+    Add items to cart
+    
+    Live total calculation
+    
+    Enter name and place order
+    
+    Auto‑generated token number
+    
+    Receipt‑style order confirmation
 
-Admin panel for:
+**🛠 Admin Panel**
+  Real‑time order monitoring
+  
+  Approve orders after payment
+  
+  Mark orders as completed
+  
+  Chef view for active orders
+  
+  Income summary (Cash vs Online)
+  
+  Item stock management (Enable/Disable items)
 
-Viewing all orders
+**⚙️ Tech Stack**
+  Frontend: HTML, CSS, JavaScript
+  
+  Database: Firebase Realtime Database
+  
+  Hosting: Firebase Hosting
+  
+  Cost: Runs fully on Firebase free tier (zero cost)
 
-Approving orders
+**📦 Project Structure**
+  ├── index.html        → User ordering page
+  ├── admin.html        → Admin panel
+  ├── login.html        → Admin login
+  ├── app.js            → Main logic
+  ├── style.css         → Styles
+  └── screenshots/      → README images
 
-Marking orders as completed
-
-Managing item availability
-
-Income summary (cash & online)
-
-🛠️ Tech Stack
-HTML5
-
-CSS3
-
-JavaScript
-
-Firebase Realtime Database
-
-Firebase Hosting
-
-🎯 Use Case
+**🎯 Use Cases**
 Perfect for:
 
-Street food stalls
+  Street food stalls
 
-Small cafés
+  College canteens
 
-College canteens
+  Small cafés
 
-Event food counters
+  Event food counters
+
+  Token‑based service systems
+

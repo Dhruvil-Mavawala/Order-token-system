@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body{
+      background:#0f172a;
+      color:white;
+      font-family:Arial;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      height:100vh;
+    }
+    .box{
+      background:#1e293b;
+      padding:30px;
+      border-radius:12px;
+      width:300px;
+      text-align:center;
+    }
+    input{
+      width:100%;
+      padding:10px;
+      margin:10px 0;
+      border:none;
+      border-radius:8px;
+      background:#0f172a;
+      color:white;
+    }
+    button{
+      width:100%;
+      padding:12px;
+      background:#22c55e;
+      border:none;
+      border-radius:8px;
+      color:white;
+      font-weight:bold;
+      cursor:pointer;
+    }
+    p{ color:#ef4444; }
+  </style>
+</head>
+<body>
+
+<div class="box">
+  <h2>🔐 Admin Login</h2>
+  <input id="username" placeholder="Username">
+  <input id="password" type="password" placeholder="Password">
+  <button onclick="login()">Login</button>
+  <p id="error"></p>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+<script>
+firebase.initializeApp({
+  apiKey: "AIzaSyDuupp0teM7ERoSaeiP1i4qo3_EGLUCpSQ",
+  authDomain: "order-token-system.firebaseapp.com",
+  databaseURL: "https://order-token-system-default-rtdb.firebaseio.com",
+  projectId: "order-token-system"
+});
+
+const db = firebase.database();
+
+function login() {
+  const u = document.getElementById("username").value.trim();
+  const p = document.getElementById("password").value.trim();
+  const error = document.getElementById("error");
+
+  error.innerText = "";
+
+  if (!u || !p) {
+    error.innerText = "Enter username & password";
+    return;
+  }
+
+  db.ref("login/auth1").get()
+    .then(snapshot => {
+      if (!snapshot.exists()) {
+        error.innerText = "Login data missing in database";
+        return;
+      }
+
+      const data = snapshot.val();
+      console.log("DB DATA:", data); // 🔍 debug
+
+      if (u == data.id && p == data.pass) {
+        localStorage.setItem("adminAuth", "true");
+        window.location.href = "admin.html";
+      } else {
+        error.innerText = "Wrong username or password";
+      }
+    })
+    .catch(err => {
+      error.innerText = err.message;
+      console.error(err);
+    });
+}
+</script>
+
+</body>
+</html>

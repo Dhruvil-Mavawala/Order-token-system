@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Order System</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>🍽️ Menu</h1>
+
+<div id="menu" class="menu"></div>
+
+<h2>🛒 Cart</h2>
+<ul id="cart"></ul>
+
+<h3>Total: ₹<span id="total">0</span></h3>
+
+<button class="order-btn" onclick="openNamePopup()">Place Order</button>
+
+<!-- NAME POPUP -->
+<div id="nameModal" class="modal">
+  <div class="modal-box">
+    <h2>Enter Name</h2>
+    <input id="customerName" placeholder="Customer name">
+    <button onclick="confirmOrder()">Confirm</button>
+    <button class="cancel" onclick="closeNamePopup()">Cancel</button>
+  </div>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyDuupp0teM7ERoSaeiP1i4qo3_EGLUCpSQ",
+    authDomain: "order-token-system.firebaseapp.com",
+    databaseURL: "https://order-token-system-default-rtdb.firebaseio.com",
+    projectId: "order-token-system"
+  };
+  firebase.initializeApp(firebaseConfig);
+</script>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+{
+  "name": "order-token-system",
+  "path": "d:\\order-token-system",
+  "type": "directory",
+  "children": [
+    {
+      "name": ".firebaserc",
+      "type": "file",
+      "icon": "📄"
+    },
+    {
+      "name": ".gitignore",
+      "type": "file",
+      "icon": "📁"
+    },
+    {
+      "name": "404.html",
+      "type": "file",
+      "icon": "🌐"
+    },
+    {
+      "name": "admin.html",
+      "type": "file",
+      "icon": "🌐"
+    },
+    {
+      "name": "app.js",
+      "type": "file",
+      "icon": "📜"
+    },
+    {
+      "name": "firebase.json",
+      "type": "file",
+      "icon": "⚙️"
+    },
+    {
+      "name": "index.html",
+      "type": "file",
+      "icon": "🌐"
+    },
+    {
+      "name": "login.html",
+      "type": "file",
+      "icon": "🌐"
+    },
+    {
+      "name": "receipt.html",
+      "type": "file",
+      "icon": "🌐"
+    },
+    {
+      "name": "style.css",
+      "type": "file",
+      "icon": "🎨"
+    }
+  ],
+  "metadata": {
+    "generated": "2026-01-31T16:12:02.781Z",
+    "generator": "FileTree Pro Extension",
+    "version": "0.2.0",
+    "showIcons": true,
+    "maxDepth": 10
+  }
+}

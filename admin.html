@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+    if (localStorage.getItem("adminAuth") !== "true") {
+      window.location.href = "login.html";
+    }
+  </script>
+  <title>Admin Panel - Mobile Optimized</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --accent: #22c55e;
+      --primary: #3b82f6;
+      --danger: #ef4444;
+      --text: #f8fafc;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      padding-bottom: 80px; /* Space for fixed tabs at bottom */
+    }
+
+    /* HEADER */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      background: var(--card);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .header strong { font-size: 1.2rem; }
+
+    .logout-btn {
+      background: var(--danger);
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+
+    /* SEARCH */
+    .search-container {
+      padding: 15px;
+    }
+
+    .search-container input {
+      width: 100%;
+      padding: 14px;
+      border-radius: 10px;
+      border: 1px solid #334155;
+      background: var(--card);
+      color: white;
+      font-size: 16px; /* Prevents iOS zoom on focus */
+      box-sizing: border-box;
+    }
+
+    /* TABS (FIXED BOTTOM FOR MOBILE) */
+    .tabs {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      background: #1e293b;
+      padding: 10px;
+      gap: 5px;
+      border-top: 1px solid #334155;
+      z-index: 1000;
+    }
+
+    .tabs button {
+      flex: 1;
+      padding: 10px 5px;
+      border: none;
+      border-radius: 8px;
+      background: transparent;
+      color: #94a3b8;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      transition: 0.2s;
+    }
+
+    .tabs button.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    /* ORDERS & CARDS */
+    .section { padding: 10px; }
+    
+    .order {
+      background: var(--card);
+      padding: 16px;
+      border-radius: 16px;
+      margin-bottom: 12px;
+      border: 1px solid #334155;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .token-badge {
+      background: var(--primary);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+
+    .items-list {
+      margin: 10px 0;
+      padding: 10px;
+      background: rgba(0,0,0,0.2);
+      border-radius: 8px;
+      font-family: monospace;
+      line-height: 1.6;
+    }
+
+    /* MOBILE ACTION BUTTONS */
+    button.action {
+      width: 100%;
+      padding: 15px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 12px;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .approve { background: var(--accent); color: #064e3b; }
+    .complete { background: var(--primary); color: white; }
+
+    /* MODALS */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      justify-content: center;
+      align-items: flex-end; /* Slide up from bottom feel */
+      z-index: 2000;
+    }
+
+    .modal-content {
+      background: var(--card);
+      padding: 25px;
+      border-radius: 24px 24px 0 0;
+      width: 100%;
+      text-align: center;
+    }
+
+    .modal-content h2 { margin-top: 0; }
+    
+    .payment-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .btn-cash { background: var(--accent); color: #000; padding: 20px; border-radius: 15px; border:none; font-weight:bold; }
+    .btn-online { background: var(--primary); color: #fff; padding: 20px; border-radius: 15px; border:none; font-weight:bold; }
+    
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+    <strong>Admin Panel</strong>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+
+  <div class="search-container">
+    <input type="number" id="searchToken" placeholder="🔍 Search Token Number...">
+  </div>
+
+  <div id="all" class="section" style="display:block;"></div>
+  <div id="approved" class="section" style="display:none;"></div>
+  <div id="completed" class="section" style="display:none;"></div>
+  <div id="items" class="section" style="display:none;"></div>
+
+  <div class="tabs">
+    <button class="active" onclick="showTab('all', this)">📥 Orders</button>
+    <button onclick="showTab('approved', this)">👨‍🍳 Chef</button>
+    <button onclick="showTab('completed', this)">✅ History</button>
+    <button onclick="showTab('items', this)">📦 Stock</button>
+  </div>
+
+  <div id="paymentModal" class="modal-overlay">
+    <div class="modal-content">
+      <h2>Complete Payment</h2>
+      <p>Select method for this order:</p>
+      <div class="payment-grid">
+        <button class="btn-cash" onclick="confirmPayment('CASH')">💵<br>CASH</button>
+        <button class="btn-online" onclick="confirmPayment('ONLINE')">📱<br>ONLINE</button>
+      </div>
+      <button onclick="paymentModal.style.display='none'" style="background:transparent; color:#94a3b8; border:none; margin-top:20px;">Cancel</button>
+    </div>
+  </div>
+
+  <div id="incomeModal" class="modal-overlay">
+    <div class="modal-content" style="margin-bottom: 20px; border-radius: 20px; width: 90%;">
+      <h2>💰 Summary</h2>
+      <div id="incomeText" style="font-size: 1.2rem; line-height: 2;"></div>
+      <button class="action approve" onclick="closeIncomePopup()">Close</button>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDuupp0teM7ERoSaeiP1i4qo3_EGLUCpSQ",
+      authDomain: "order-token-system.firebaseapp.com",
+      databaseURL: "https://order-token-system-default-rtdb.firebaseio.com",
+      projectId: "order-token-system"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // Replace the ITEMS array in your Admin Panel with this complete list:
+const ITEMS = [
+  { id: "vadapav", name: "Vadapav" },
+  { id: "butter_vadapav", name: "Butter Vadapav" },
+  { id: "Cheese_vadapav", name: "Cheese Vadapav" },
+  { id: "Bread_Pakoda", name: "Bread Pakoda" },
+  { id: "chinese_roll", name: "Chinese Roll" },
+  { id: "limbu_gotta_vada", name: "Limbu Gotta vada" },
+  { id: "3choco_bowl", name: "3 Chocolate Bowl" },
+  { id: "Strawberry_choco", name: "Strawberry chocolate bowl" },
+  { id: "oreo_bowl", name: "Oreo Chocolate Bowl" },
+  { id: "kitkat_choco_bowl", name: "Kitkat Chocolate Bowl" },
+  { id: "biscoff_bowl", name: "Biscoff Chocolate Bowl" },
+  { id: "kunafa_bowl", name: "Kunafa Chocolate Bowl" }
+];
+
+    let ordersCache = [];
+    let selectedOrderId = null;
+
+    function showTab(id, btn) {
+      document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+      document.getElementById(id).style.display = 'block';
+      document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      window.scrollTo(0, 0); // Scroll to top when switching
+    }
+
+    document.getElementById("searchToken").addEventListener("input", renderOrders);
+
+    db.ref("orders").on("value", snap => {
+      ordersCache = [];
+      snap.forEach(child => {
+        ordersCache.push({ id: child.key, ...child.val() });
+      });
+      ordersCache.sort((a, b) => b.token - a.token);
+      renderOrders();
+    });
+
+    function renderOrders() {
+      const search = document.getElementById("searchToken").value;
+      const allDiv = document.getElementById("all");
+      const approvedDiv = document.getElementById("approved");
+      const completedDiv = document.getElementById("completed");
+
+      allDiv.innerHTML = "";
+      approvedDiv.innerHTML = "";
+      completedDiv.innerHTML = "";
+
+      let cashTotal = 0;
+      let onlineTotal = 0;
+
+      ordersCache.forEach(o => {
+        if (search && o.token != search) return;
+
+        let itemsHtml = "";
+        for (let i in o.items) {
+          itemsHtml += `• ${i} × ${o.items[i].qty}<br>`;
+        }
+
+        if (o.orderStatus === "Pending") {
+          allDiv.innerHTML += `
+            <div class="order">
+              <div style="display:flex; justify-content:space-between;">
+                <span class="token-badge">Token #${o.token}</span>
+                <span style="color:#94a3b8">₹${o.total}</span>
+              </div>
+              <p><b>Customer:</b> ${o.customerName}</p>
+              <div class="items-list">${itemsHtml}</div>
+              <button class="action approve" onclick="approveOrder('${o.id}')">Approve & Pay</button>
+            </div>`;
+        }
+
+        if (o.orderStatus === "Approved") {
+          approvedDiv.innerHTML += `
+            <div class="order">
+              <span class="token-badge" style="background:var(--accent); color:#000;">Token #${o.token}</span>
+              <div class="items-list" style="font-size:1.1rem; border-left: 4px solid var(--accent);">${itemsHtml}</div>
+              <button class="action complete" onclick="completeOrder('${o.id}')">Mark Ready/Served</button>
+            </div>`;
+        }
+
+        if (o.orderStatus === "Completed") {
+          completedDiv.innerHTML += `
+            <div class="order" style="opacity:0.8">
+              <div style="display:flex; justify-content:space-between; align-items:center">
+                <b>Token #${o.token}</b>
+                <span style="font-size:12px; background:#334155; padding:2px 6px; border-radius:4px;">${o.paymentMode}</span>
+              </div>
+              <div style="margin-top:8px">Total: ₹${o.total}</div>
+            </div>`;
+          if (o.paymentMode === "CASH") cashTotal += o.total;
+          if (o.paymentMode === "ONLINE") onlineTotal += o.total;
+        }
+      });
+
+      completedDiv.innerHTML = `
+        <button class="action complete" style="margin-bottom:20px" onclick="openIncomePopup(${cashTotal}, ${onlineTotal})">
+          💰 View Today's Total
+        </button>
+      ` + completedDiv.innerHTML;
+    }
+
+    function approveOrder(id) {
+      selectedOrderId = id;
+      document.getElementById("paymentModal").style.display = "flex";
+    }
+
+    function confirmPayment(mode) {
+      db.ref("orders/" + selectedOrderId).update({
+        paymentStatus: "PAID",
+        paymentMode: mode,
+        orderStatus: "Approved"
+      });
+      document.getElementById("paymentModal").style.display = "none";
+      selectedOrderId = null;
+    }
+
+    function completeOrder(id) {
+      db.ref("orders/" + id).update({ orderStatus: "Completed" });
+    }
+
+    function openIncomePopup(cash, online) {
+      document.getElementById("incomeText").innerHTML = `
+        💵 Cash: <b>₹${cash}</b><br>
+        📱 Online: <b>₹${online}</b><br>
+        <hr style="border:0; border-top:1px solid #334155; margin:10px 0;">
+        <span style="font-size:1.5rem; color:var(--accent)">Total: ₹${cash + online}</span>
+      `;
+      document.getElementById("incomeModal").style.display = "flex";
+    }
+
+    function closeIncomePopup() {
+      document.getElementById("incomeModal").style.display = "none";
+    }
+
+    db.ref("itemsStock").on("value", snap => {
+      const stock = snap.val() || {};
+      const itemsDiv = document.getElementById("items");
+      itemsDiv.innerHTML = "<h2 style='text-align:center'>📦 Stock Control</h2>";
+      ITEMS.forEach(it => {
+        const available = stock[it.id] !== false;
+        itemsDiv.innerHTML += `
+          <div class="order" style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <b>${it.name}</b><br>
+              <span style="color:${available ? '#22c55e' : '#ef4444'}; font-size:12px">
+                ● ${available ? 'IN STOCK' : 'OUT OF STOCK'}
+              </span>
+            </div>
+            <button class="action" 
+              style="width:auto; margin:0; padding:8px 15px; font-size:12px; background:${available ? '#ef4444' : '#22c55e'}"
+              onclick="setStock('${it.id}',${!available})">
+              ${available ? 'Disable' : 'Enable'}
+            </button>
+          </div>`;
+      });
+    });
+
+    function setStock(id, val) {
+    console.log("Updating Stock:", id, "to", val); // Debugging line
+    db.ref("itemsStock/" + id).set(val)
+      .then(() => {
+          console.log("Update successful!");
+      })
+      .catch((error) => {
+          alert("Error updating stock: " + error.message);
+      });
+}
+
+    function logout() {
+      localStorage.removeItem("adminAuth");
+      window.location.href = "login.html";
+    }
+  </script>
+</body>
+</html>
